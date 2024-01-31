@@ -26,7 +26,7 @@ jobs:
           flake8 --max-line-length=100 --format=html --htmldir=flake-report src
       
       - name: Upload flake8 report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: flake8_report
           path: flake-report
