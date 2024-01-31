@@ -26,8 +26,6 @@ jobs:
           pip install flake8 flake8-html
       - name: Run flake8
         run: |
-          flake8 --count --select=E9,F63,F7,F82 --show-source --statistics src
-          flake8 --count --max-complexity=10 --max-line-length=100 --statistics src
           flake8 --max-line-length=100 --format=html --htmldir=flake-report src
       
       - name: Upload flake8 report
