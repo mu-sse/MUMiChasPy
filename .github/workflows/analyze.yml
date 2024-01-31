@@ -1,0 +1,32 @@
+name: Static analysis
+
+on: [push]
+
+jobs:
+  analyze:
+    name: Static analysis using flake8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+          cache: pip
+          cache-dependency-path: '**/pyproject.toml'
+  
+      - name: Install module dependencies
+        run: python -m pip install .[test]
+      - name: Install analysis dependencies
+        run: |
+          pip install flake8 flake8-html
+      - name: Run flake8
+        run: |
+          flake8 --max-line-length=100 --format=html --htmldir=flake-report src
+      
+      - name: Upload flake8 report
+        uses: actions/upload-artifact@v2
+        with:
+          name: flake8_report
+          path: flake-report

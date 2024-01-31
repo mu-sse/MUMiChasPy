@@ -1,0 +1,8 @@
+[MASTER]
+
+[BASIC]
+good-names=i,j,k,e,ex,Run,_,db
+
+[FORMAT]
+# Maximum number of characters on a single line.
+max-line-length=100
