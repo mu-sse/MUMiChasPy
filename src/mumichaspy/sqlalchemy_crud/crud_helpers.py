@@ -8,11 +8,7 @@ from sqlalchemy.future import select
 # Generic CRUD functions ##########################################################################
 # READ
 async def get_list(
-        db: AsyncSession,
-        model,
-        offset: int = None,
-        limit: int = None,
-        order_by: str = None
+    db: AsyncSession, model, offset: int = None, limit: int = None, order_by: str = None
 ):
     """Retrieve a list of elements from database"""
     stmt = select(model)
@@ -53,7 +49,7 @@ async def delete_element_by_id(db: AsyncSession, model, element_id):
 def set_order_by_to_statement(stmt, model, order_by):
     """Adds order by to given statement if needed."""
     if order_by is not None:
-        if order_by.startswith('-'):
+        if order_by.startswith("-"):
             stmt = stmt.order_by(getattr(model, order_by[1:]).desc())
         else:
             stmt = stmt.order_by(getattr(model, order_by))

@@ -5,8 +5,12 @@ import pytest
 
 from sqlalchemy.future import select
 
-from mumichaspy.sqlalchemy_crud.crud_helpers import get_element_by_id, \
-    get_first_statement_result, get_list, delete_element_by_id
+from mumichaspy.sqlalchemy_crud.crud_helpers import (
+    get_element_by_id,
+    get_first_statement_result,
+    get_list,
+    delete_element_by_id,
+)
 from .helpers import get_db, get_ids, N_OF_ENTITIES
 from .models import EntityForTesting
 
@@ -57,22 +61,22 @@ async def test_get_list_ok():
 async def test_get_list_order_by_ok():
     """Test that default order by (asc) works."""
     async with get_db(empty=False) as db:
-        elements = await get_list(db, EntityForTesting, order_by='description')
+        elements = await get_list(db, EntityForTesting, order_by="description")
         assert elements is not None
         assert len(elements) == N_OF_ENTITIES
         for i in range(1, N_OF_ENTITIES):
-            assert elements[i-1].description < elements[i].description
+            assert elements[i - 1].description < elements[i].description
 
 
 @pytest.mark.asyncio
 async def test_get_list_order_by_desc_ok():
     """Test that order by desc works."""
     async with get_db(empty=False) as db:
-        elements = await get_list(db, EntityForTesting, order_by='-description')
+        elements = await get_list(db, EntityForTesting, order_by="-description")
         assert elements is not None
         assert len(elements) == N_OF_ENTITIES
         for i in range(1, N_OF_ENTITIES):
-            assert elements[i-1].description > elements[i].description
+            assert elements[i - 1].description > elements[i].description
 
 
 @pytest.mark.asyncio
@@ -102,14 +106,10 @@ async def test_get_list_order_limit_offset_ok():
     """Test that all options work together."""
     offset = 10
     limit = 4
-    order_by = '-id'
+    order_by = "-id"
     async with get_db(empty=False) as db:
         elements = await get_list(
-            db,
-            EntityForTesting,
-            order_by=order_by,
-            limit=limit,
-            offset=offset
+            db, EntityForTesting, order_by=order_by, limit=limit, offset=offset
         )
         assert elements is not None
         assert len(elements) == limit
@@ -183,4 +183,7 @@ async def test_get_first_statement_result_ok():
         assert element is not None
         assert element.id == expected_id
         assert element.name == f"Test name {expected_id - 1}"
-        assert element.description == f"{N_OF_ENTITIES - (expected_id - 1):03d} description"
+        assert (
+            element.description
+            == f"{N_OF_ENTITIES - (expected_id - 1):03d} description"
+        )

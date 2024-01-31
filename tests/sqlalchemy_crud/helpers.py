@@ -9,14 +9,18 @@ from sqlalchemy.sql import text
 
 from .models import EntityForTesting
 
-engine = create_async_engine('sqlite+aiosqlite:///:memory:', echo=True, future=True)
+engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=True, future=True)
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 
 N_OF_ENTITIES = 20
 
 entities = [
-    {"id": None, "name": f"Test name {i}", "description": f"{N_OF_ENTITIES - i:03d} description"}
+    {
+        "id": None,
+        "name": f"Test name {i}",
+        "description": f"{N_OF_ENTITIES - i:03d} description",
+    }
     for i in range(N_OF_ENTITIES)
 ]
 
@@ -65,7 +69,7 @@ async def insert_entities(db):
         db.add(new_entity)
         await db.commit()
         await db.refresh(new_entity)
-        entity['id'] = new_entity.id
+        entity["id"] = new_entity.id
 
 
 async def truncate_table(db, table_names=None):
@@ -73,16 +77,16 @@ async def truncate_table(db, table_names=None):
     if table_names is None:
         table_names = [EntityForTesting.__tablename__]
     for table_name in table_names:
-        await db.execute(text("DELETE FROM "+table_name))
+        await db.execute(text("DELETE FROM " + table_name))
     for entity in entities:
-        entity['id'] = None
+        entity["id"] = None
 
 
 def get_ids():
     """Get a list of ids from entity dict array."""
-    return [entity['id'] for entity in entities]
+    return [entity["id"] for entity in entities]
 
 
 def get_entity_by_id(entity_id):
     """Get an entity by id from entity dict array."""
-    return next(entity for entity in entities if entity['id'] == entity_id)
+    return next(entity for entity in entities if entity["id"] == entity_id)
