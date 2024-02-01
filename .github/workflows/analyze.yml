@@ -23,12 +23,11 @@ jobs:
           flake8 --max-line-length=100 --output-file=flake8-report.txt src
   
       - name: Annotate flake8 output
-        uses: yuzutech/annotations-action@v1
+        uses: yuzutech/annotations-action@v0.4.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          report-path: 'flake8-report.txt'
-          report-format: 'flake8'
-          level: 'warning'
+          input: 'flake8-report.txt'
+          title: 'flake8 report'
 
       #    python -m pip install flake8 flake8-html
       # - name: Run flake8
