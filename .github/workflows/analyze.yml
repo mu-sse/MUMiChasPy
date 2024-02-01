@@ -3,7 +3,7 @@ name: Static analysis
 on: [push]
 
 jobs:
-  analyze:
+  flake8:
     name: Static analysis using flake8
     runs-on: ubuntu-latest
     steps:
@@ -17,13 +17,7 @@ jobs:
       - name: Install module dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[test]
-
-      - name: Flake8 Annotator
-        uses: rbialon/flake8-annotations@v1.1
-      - name: Install lint dependencies
-        run: |
-          pip install flake8 flake8-html
+          python -m pip install flake8 flake8-html
       - name: Run flake8
         run: |
           flake8 --max-line-length=100 --format=html --htmldir=flake-report src
@@ -33,3 +27,59 @@ jobs:
         with:
           name: flake8_report
           path: flake-report
+
+  bandit:
+    name: Static analysis using bandit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+          cache: pip
+          cache-dependency-path: '**/pyproject.toml'
+      - name: Install module dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install bandit
+      - name: Run bandit
+        run: |
+            bandit -r src -x tests -o bandit_report.json -f json
+      
+      - name: Upload bandit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit_report
+          path: bandit_report.json
+  
+  coverage:
+    name: Static analysis using coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+          cache: pip
+          cache-dependency-path: '**/pyproject.toml'
+      - name: Install module dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest pytest-cov requests
+          python -m pip install .[test]
+      - name: Run tests
+        run: |
+            pytest --junitxml=report.xml
+      - name: Run coverage
+        run: |
+            coverage run --source=src -m pytest
+            coverage report
+            coverage xml
+      
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage_report
+          path: coverage.xml
