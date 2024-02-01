@@ -17,13 +17,15 @@ jobs:
       - name: Install module dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install flake8
+          python -m pip install flake8 flake8-html
       - name: Run flake8
-        uses: suo/flake8-github-action@releases/v1
+        run: |
+          flake8 --max-line-length=100 --format=html --htmldir=flake-report src
+      - name: Upload flake8 report
+        uses: actions/upload-artifact@v4
         with:
-          checkName: flake8
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: flake8_report
+          path: flake-report
 
   bandit:
     name: Static analysis using bandit
@@ -36,10 +38,19 @@ jobs:
           python-version: 3.8
           cache: pip
           cache-dependency-path: '**/pyproject.toml'
-      - name:
-        uses: shundor/python-bandit-scan@v1.0
-        with: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install module dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install bandit
+      - name: Run bandit
+        run: |
+            bandit -r src -x tests -o bandit_report.json -f json
+      
+      - name: Upload bandit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit_report
+          path: bandit_report.json
   
   coverage:
     name: Static analysis using coverage
@@ -71,9 +82,3 @@ jobs:
         with:
           name: coverage_report
           path: coverage.xml
-      
-      - name: Show coverage report
-        uses: orgoro/coverage@v3.1
-        with:
-          coverageFile: coverage.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
