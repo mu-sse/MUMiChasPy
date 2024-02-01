@@ -17,23 +17,20 @@ jobs:
       - name: Install module dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install flake8
-      
+          python -m pip install flake8 flake8-html
+      - name: Run flake8
+        run: |
+          flake8 --max-line-length=100 --format=html --htmldir=flake-report src
+      - name: Upload flake8 report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lint report (flake8 HTML)
+          path: flake-report
       - name: Setup flake8 annotations
         uses: rbialon/flake8-annotations@v1.1
       - name: Run flake8
         run: |
           flake8 --max-line-length=100 src
-
-      #    python -m pip install flake8 flake8-html
-      # - name: Run flake8
-      #   run: |
-      #     flake8 --max-line-length=100 --format=html --htmldir=flake-report src
-      # - name: Upload flake8 report
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: flake8_report
-      #     path: flake-report
 
   bandit:
     name: Static analysis using bandit
@@ -57,7 +54,7 @@ jobs:
       - name: Upload bandit report
         uses: actions/upload-artifact@v4
         with:
-          name: Security report JSON
+          name: Security report JSON (Bandit)
           path: bandit_report.json
       
       - name: Setup bandit annotations
@@ -69,7 +66,7 @@ jobs:
       - name: Upload bandit txt report
         uses: actions/upload-artifact@v4
         with:
-          name: Security report TXT
+          name: Security report TXT (Bandit)
           path: output/security_report.txt
 
   
@@ -101,5 +98,5 @@ jobs:
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
-          name: coverage_report
+          name: Coverage Report (XML)
           path: coverage.xml
