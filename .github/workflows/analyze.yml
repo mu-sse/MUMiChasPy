@@ -59,6 +59,19 @@ jobs:
         with:
           name: bandit_report
           path: bandit_report.json
+      
+      - name: Setup bandit annotations
+        uses: ioggstream/bandit-report-artifacts@v1.7.4
+        with:
+          project_path: src
+          ignore_failure: true
+      
+      - name: Upload bandit txt report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit_report_txt
+          path: bandit_report.txt
+
   
   coverage:
     name: Static analysis using coverage
