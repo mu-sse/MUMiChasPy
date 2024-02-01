@@ -37,12 +37,9 @@ jobs:
           cache: pip
           cache-dependency-path: '**/pyproject.toml'
       - name:
-        uses: shundor/bandit-action@v1
+        uses: shundor/python-bandit-scan@v1.0
         with: 
-            path: "."
-            level: high
-            confidence: high
-            exit_zero: true  
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
   coverage:
     name: Static analysis using coverage
@@ -76,7 +73,7 @@ jobs:
           path: coverage.xml
       
       - name: Show coverage report
-        uses: orgoro/coverage.xml
+        uses: orgoro/coverage@v3.1
         with:
-          path: coverage.xml
+          coverageFile: coverage.xml
           token: ${{ secrets.GITHUB_TOKEN }}
