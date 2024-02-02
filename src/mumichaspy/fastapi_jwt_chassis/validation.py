@@ -7,7 +7,7 @@ from fastapi import Request, status, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 import jwt
-from mumichaspy.fastapi_jwt_validation.config import config
+from mumichaspy.fastapi_jwt_chassis.config import config
 
 logger = logging.getLogger(__name__)
 

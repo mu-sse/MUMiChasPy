@@ -2,12 +2,12 @@ import time
 from fastapi import HTTPException, status
 import jwt
 import pytest
-from mumichaspy.fastapi_jwt_validation.config import config
+from mumichaspy.fastapi_jwt_chassis.config import config
 
-from mumichaspy.fastapi_jwt_validation.validation import (
+from mumichaspy.fastapi_jwt_chassis.validation import (
     validate_and_decode_token,
 )
-from tests.fastapi_jwt_validation.helpers import TESTING_PUBLIC_KEY, TESTING_PRIVATE_KEY
+from .helpers import TESTING_PUBLIC_KEY, TESTING_PRIVATE_KEY
 
 config.public_key = TESTING_PUBLIC_KEY
 
