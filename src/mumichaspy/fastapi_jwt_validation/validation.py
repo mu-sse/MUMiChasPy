@@ -1,4 +1,5 @@
 """Security module for JWT validation."""
+
 # @ToDo: Move this to MUMiChasPy module and test it there.
 
 import logging
@@ -6,7 +7,7 @@ from fastapi import Request, status, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 import jwt
-from mumichaspy.fastapi_jwt_validation.jwt_validation_config import config
+from mumichaspy.fastapi_jwt_validation.config import config
 
 logger = logging.getLogger(__name__)
 

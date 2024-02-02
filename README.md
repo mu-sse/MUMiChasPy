@@ -37,6 +37,15 @@ flake8 --max-line-length=100 --format=html --htmldir=flake-report **/*.py
 Open flake-report/index.html with your browser.
 
 
+## Environment variables
+
+## SQLALCHEMY_DATABASE_URL
+
+Used as the URL to connect to the database.
+
+* Database URL can be imported like this: ```from mumichaspy.sqlalchemy_db.config import SQLALCHEMY_DATABASE_URL```
+
+
 ## License
 
 MIT license (see LICENSE), provided WITHOUT WARRANTY.

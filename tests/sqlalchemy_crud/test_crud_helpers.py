@@ -5,7 +5,7 @@ import pytest
 
 from sqlalchemy.future import select
 
-from mumichaspy.sqlalchemy_crud.crud_helpers import (
+from mumichaspy.sqlalchemy_crud.crud import (
     get_element_by_id,
     get_first_statement_result,
     get_list,
