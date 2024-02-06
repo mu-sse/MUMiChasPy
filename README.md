@@ -45,9 +45,13 @@ See ```dot_env_example``` file.
 
 Used as the URL to connect to the database.
 
+### PUBLIC_KEY_FILE_PATH
+
+File path where public key will be stored (or loaded if URL is not correctly working).
+
 ### PUBLIC_KEY_URL
 
-When system starts (or when ```update_public_key``` is executed), a REST call will be made to that URL to get the public key. If rest call is not successful, ```public_key.pem``` file will be loaded.
+When system starts (or when ```update_public_key``` is executed), a REST call will be made to that URL to get the public key. If rest call is not successful, PUBLIC_KEY_FILE_PATH file will be loaded.
 
 To force public key, we could for example:
 
