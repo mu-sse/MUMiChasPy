@@ -39,11 +39,32 @@ Open flake-report/index.html with your browser.
 
 ## Environment variables
 
-## SQLALCHEMY_DATABASE_URL
+See ```dot_env_example``` file.
+
+### SQLALCHEMY_DATABASE_URL
 
 Used as the URL to connect to the database.
 
-* Database URL can be imported like this: ```from mumichaspy.sqlalchemy_db.config import SQLALCHEMY_DATABASE_URL```
+### PUBLIC_KEY_URL
+
+When system starts (or when ```update_public_key``` is executed), a REST call will be made to that URL to get the public key. If rest call is not successful, ```public_key.pem``` file will be loaded.
+
+To force public key, we could for example:
+
+```python
+from mumichaspy.fastapi_jwt_chassis.config import config
+...
+if config.public_key is None:
+    config.update_public_key()
+```
+
+### JWT_ISSUER
+
+When validating a JWT, provided issuer (iss) will be checked.
+
+### JWT_ALGORITHM
+
+The algorithm used for JWT validation (RS256 by default)
 
 
 ## License

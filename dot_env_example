@@ -1,0 +1,4 @@
+SQLALCHEMY_DATABASE_URL=sqlite+aiosqlite:///./microservice.db
+PUBLIC_KEY_URL=https://auth.example.com/pk
+JWT_ISSUER=mu-sse
+JWT_ALGORITHM=RS256

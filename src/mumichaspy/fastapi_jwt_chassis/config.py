@@ -7,10 +7,8 @@ logger = logging.getLogger(__name__)
 
 class Config:
     public_key = None
-    public_key_url = os.getenv(
-        "PUBLIC_KEY_URL", "https://auth.alainperez.duckdns.org/public_key"
-    )
-    jwt_issuer = os.getenv("JWT_ISSUER", "aperez")
+    public_key_url = os.getenv("PUBLIC_KEY_URL", "https://auth.example.com/pk")
+    jwt_issuer = os.getenv("JWT_ISSUER", "mu-sse")
     jwt_algorithm = os.getenv("JWT_ALGORITHM", "RS256")
 
     def __init__(self):
