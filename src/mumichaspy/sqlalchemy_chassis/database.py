@@ -3,7 +3,7 @@
 
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from mumichaspy.sqlalchemy_db.config import config
+from mumichaspy.sqlalchemy_chassis.config import config
 
 engine = create_async_engine(config.SQLALCHEMY_DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(
