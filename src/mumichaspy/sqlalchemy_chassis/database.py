@@ -23,4 +23,4 @@ async def get_db():
     except:  # noqa: E722
         await db.rollback()
     finally:
-        db.close()
+        await db.close()

@@ -3,7 +3,7 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from mumichaspy.sqlalchemy_db.database import get_db
+from mumichaspy.sqlalchemy_chassis.database import get_db
 
 
 @pytest.mark.asyncio

@@ -7,7 +7,7 @@ write_to = "mumichaspy/_version.py"
 
 [project]
 name = "mumichaspy"
-version = "0.0.4"
+version = "1.0.0"
 authors = [
     { name="Alain PEREZ RIAÑO", email="aperez@mondragon.edu" },
 ]
