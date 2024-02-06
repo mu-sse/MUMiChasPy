@@ -1,4 +1,4 @@
-public_key.pem
+*.pem
 # flake8
 flake-report/
 
