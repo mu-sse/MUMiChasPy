@@ -1,5 +1,7 @@
 # MUMiChasPy
 
+![MuMiChasPy logo](logo.png)
+
 **Mondragon Unibertsitatea**'s *Microservice Chassis* pattern implementation in *Python* (MuMiChasPy).
 
 ## Developers
