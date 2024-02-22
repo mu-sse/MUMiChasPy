@@ -3,6 +3,10 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 # Generic CRUD functions ##########################################################################
@@ -43,6 +47,21 @@ async def delete_element_by_id(db: AsyncSession, model, element_id):
         await db.delete(element)
         await db.commit()
     return element
+
+
+# CREATE
+async def create_element(db: AsyncSession, db_element):
+    """Insert a element in the database."""
+
+    try:
+        db.add(db_element)
+        await db.commit()
+        await db.refresh(db_element)
+    except Exception as exc:
+        logger.error(exc)
+        await db.rollback()
+        db_element = None
+    return db_element
 
 
 # Optional parameters #############################################################################

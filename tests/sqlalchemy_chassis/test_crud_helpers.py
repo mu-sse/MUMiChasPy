@@ -10,6 +10,7 @@ from mumichaspy.sqlalchemy_chassis.crud import (
     get_first_statement_result,
     get_list,
     delete_element_by_id,
+    create_element,
 )
 from .helpers import get_db, get_ids, N_OF_ENTITIES
 from .models import EntityForTesting
@@ -187,3 +188,16 @@ async def test_get_first_statement_result_ok():
             element.description
             == f"{N_OF_ENTITIES - (expected_id - 1):03d} description"
         )
+
+
+@pytest.mark.asyncio
+async def test_create_element_ok():
+    """Test that create_element adds a new element to the database."""
+    async with get_db(empty=True) as db:
+        element_dict = {"name": "New name", "description": "New description"}
+        db_element = await create_element(db, EntityForTesting(**element_dict))
+
+        assert db_element is not None
+        assert db_element.id is not None
+        assert db_element.name == element_dict["name"]
+        assert db_element.description == element_dict["description"]
