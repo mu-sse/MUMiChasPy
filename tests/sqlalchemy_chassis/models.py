@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """Database models for testing."""
 
-from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, Integer, String
 
 
-Base = declarative_base()
+from mumichaspy.sqlalchemy_chassis.database import Base
 
 
 class EntityForTesting(Base):  # pylint: disable=too-few-public-methods

@@ -8,7 +8,7 @@ from mumichaspy.fastapi_jwt_chassis.config import (
     get_public_key_from_url,
     get_public_key_from_file,
 )
-from .helpers import TESTING_PUBLIC_KEY
+from mumichaspy.fastapi_jwt_chassis.mocks import TESTING_PUBLIC_KEY
 
 
 @mock.patch("httpx.Client.get")

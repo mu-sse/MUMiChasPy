@@ -1,3 +1,4 @@
+file:*
 *.pem
 # flake8
 flake-report/

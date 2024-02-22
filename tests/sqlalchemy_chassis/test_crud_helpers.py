@@ -12,14 +12,15 @@ from mumichaspy.sqlalchemy_chassis.crud import (
     delete_element_by_id,
     create_element,
 )
-from .helpers import get_db, get_ids, N_OF_ENTITIES
+
+from .helpers import get_testing_db, get_entity_ids, N_OF_ENTITIES, entities
 from .models import EntityForTesting
 
 
 @pytest.mark.asyncio
 async def test_get_element_by_id_error_not_found():
     """Test that get_element_by_id returns None when element is not found."""
-    async with get_db() as db:
+    async with get_testing_db() as db:
         element = await get_element_by_id(db, EntityForTesting, 1)
         assert element is None
 
@@ -27,8 +28,8 @@ async def test_get_element_by_id_error_not_found():
 @pytest.mark.asyncio
 async def test_get_element_by_id_ok():
     """Test that get_element_by_id returns the correct element."""
-    async with get_db(empty=False) as db:
-        ids = get_ids()
+    async with get_testing_db(empty=False) as db:
+        ids = get_entity_ids()
         for entity_id in ids:
             element = await get_element_by_id(db, EntityForTesting, entity_id)
             assert element is not None
@@ -38,7 +39,7 @@ async def test_get_element_by_id_ok():
 @pytest.mark.asyncio
 async def test_get_list_empty_ok():
     """Test that get_list returns an empty array when there are no elements."""
-    async with get_db() as db:
+    async with get_testing_db() as db:
         elements = await get_list(db, EntityForTesting)
         assert elements is not None
         assert len(elements) == 0
@@ -47,7 +48,7 @@ async def test_get_list_empty_ok():
 @pytest.mark.asyncio
 async def test_get_list_ok():
     """Test that get_list returns all elements."""
-    async with get_db(empty=False) as db:
+    async with get_testing_db(empty=False) as db:
         elements = await get_list(db, EntityForTesting)
         assert elements is not None
         assert len(elements) == N_OF_ENTITIES
@@ -61,7 +62,7 @@ async def test_get_list_ok():
 @pytest.mark.asyncio
 async def test_get_list_order_by_ok():
     """Test that default order by (asc) works."""
-    async with get_db(empty=False) as db:
+    async with get_testing_db(empty=False) as db:
         elements = await get_list(db, EntityForTesting, order_by="description")
         assert elements is not None
         assert len(elements) == N_OF_ENTITIES
@@ -72,7 +73,7 @@ async def test_get_list_order_by_ok():
 @pytest.mark.asyncio
 async def test_get_list_order_by_desc_ok():
     """Test that order by desc works."""
-    async with get_db(empty=False) as db:
+    async with get_testing_db(empty=False) as db:
         elements = await get_list(db, EntityForTesting, order_by="-description")
         assert elements is not None
         assert len(elements) == N_OF_ENTITIES
@@ -83,7 +84,7 @@ async def test_get_list_order_by_desc_ok():
 @pytest.mark.asyncio
 async def test_get_list_offset_ok():
     """Test that offset option works."""
-    async with get_db(empty=False) as db:
+    async with get_testing_db(empty=False) as db:
         elements = await get_list(db, EntityForTesting, offset=5)
         assert elements is not None
         assert len(elements) == N_OF_ENTITIES - 5
@@ -94,7 +95,7 @@ async def test_get_list_offset_ok():
 @pytest.mark.asyncio
 async def test_get_list_limit_ok():
     """Test that limit option works."""
-    async with get_db(empty=False) as db:
+    async with get_testing_db(empty=False) as db:
         elements = await get_list(db, EntityForTesting, limit=5)
         assert elements is not None
         assert len(elements) == 5
@@ -108,7 +109,7 @@ async def test_get_list_order_limit_offset_ok():
     offset = 10
     limit = 4
     order_by = "-id"
-    async with get_db(empty=False) as db:
+    async with get_testing_db(empty=False) as db:
         elements = await get_list(
             db, EntityForTesting, order_by=order_by, limit=limit, offset=offset
         )
@@ -125,7 +126,7 @@ async def test_larger_offset_than_elements_ok():
     If offset is larger than the number of elements, no error is expected,
     but an empty array is returned.
     """
-    async with get_db(empty=False) as db:
+    async with get_testing_db(empty=False) as db:
         elements = await get_list(db, EntityForTesting, offset=N_OF_ENTITIES)
         assert elements is not None
         assert len(elements) == 0
@@ -140,7 +141,7 @@ async def test_larger_offset_limit_than_elements_ok():
     expected_length = 2
     offset = N_OF_ENTITIES - expected_length
     limit = 4
-    async with get_db(empty=False) as db:
+    async with get_testing_db(empty=False) as db:
         elements = await get_list(db, EntityForTesting, offset=offset, limit=limit)
         assert elements is not None
         assert len(elements) == expected_length
@@ -149,7 +150,7 @@ async def test_larger_offset_limit_than_elements_ok():
 @pytest.mark.asyncio
 async def test_delete_element_by_id_error_not_found():
     """Test that delete_element_by_id returns None when element is not found."""
-    async with get_db() as db:
+    async with get_testing_db() as db:
         element = await delete_element_by_id(db, EntityForTesting, 1)
         assert element is None
 
@@ -160,8 +161,8 @@ async def test_delete_element_by_id_ok():
     Test that delete_element_by_id returns the correct element and that is actualy deleted
     from database.
     """
-    async with get_db(empty=False) as db:
-        delete_id = get_ids()[0]
+    async with get_testing_db(empty=False) as db:
+        delete_id = get_entity_ids()[0]
         element = await delete_element_by_id(db, EntityForTesting, delete_id)
         assert element is not None
         assert element.id == delete_id
@@ -177,23 +178,20 @@ async def test_delete_element_by_id_ok():
 @pytest.mark.asyncio
 async def test_get_first_statement_result_ok():
     """Test that get_first_statement_result returns the first element."""
-    async with get_db(empty=False) as db:
-        expected_id = get_ids()[0]
+    async with get_testing_db(empty=False) as db:
+        expected_entity = entities[0]
         stmt = select(EntityForTesting)
         element = await get_first_statement_result(db, stmt)
         assert element is not None
-        assert element.id == expected_id
-        assert element.name == f"Test name {expected_id - 1}"
-        assert (
-            element.description
-            == f"{N_OF_ENTITIES - (expected_id - 1):03d} description"
-        )
+        assert element.id == expected_entity["id"]
+        assert element.name == expected_entity["name"]
+        assert element.description == expected_entity["description"]
 
 
 @pytest.mark.asyncio
 async def test_create_element_ok():
     """Test that create_element adds a new element to the database."""
-    async with get_db(empty=True) as db:
+    async with get_testing_db(empty=True) as db:
         element_dict = {"name": "New name", "description": "New description"}
         db_element = await create_element(db, EntityForTesting(**element_dict))
 
