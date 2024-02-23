@@ -68,8 +68,14 @@ def mock_jwt_decode_error(encoded_token, public_key, issuer, algorithms):
 
 def mock_jwt_decode_ok(encoded_token, public_key, issuer, algorithms):
     """Mock validate and decode token and return a JWT."""
-    global DECODED_JWT
-    return {**DECODED_JWT}
+    global DECODED_MOCK_JWT
+    return {**DECODED_MOCK_JWT}
+
+
+def mock_jwt_decode_admin_ok(encoded_token, public_key, issuer, algorithms):
+    """Mock validate and decode token and return a JWT."""
+    global DECODED_ADMIN_MOCK_JWT
+    return {**DECODED_ADMIN_MOCK_JWT}
 
 
 def mock_jwt_headers(headers: dict = {}):
