@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 
 def validate_and_decode_token(
     encoded_token: str,
-    public_key: config.public_key,
-    issuer: config.jwt_issuer,
-    algorithms: None,
+    public_key: str = config.public_key,
+    issuer: str = config.jwt_issuer,
+    algorithms: str = None,
 ) -> dict:
     """Decode JWT if validates."""
     if algorithms is None or len(algorithms) == 0:

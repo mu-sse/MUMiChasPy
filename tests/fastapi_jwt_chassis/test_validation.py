@@ -15,7 +15,7 @@ from mumichaspy.fastapi_jwt_chassis.mocks import (
     get_encoded_mock_jwt,
 )
 
-from mumichaspy.fastapi_jwt_chassis.time import get_current_timestamp_in_seconds
+from mumichaspy.fastapi_jwt_chassis.time import current_timestamp
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ config.public_key = TESTING_PUBLIC_KEY
 
 def test_validate_and_decode_token():
     # Arrange
-    current_timestamp = get_current_timestamp_in_seconds()
+    current_timestamp_sec = current_timestamp()
     encoded_token = get_encoded_mock_jwt(DECODED_MOCK_JWT)
 
     # Act
@@ -36,20 +36,20 @@ def test_validate_and_decode_token():
     )
 
     # Assert
-    assert result["exp"] > current_timestamp
-    assert result["iat"] <= current_timestamp
+    assert result["exp"] > current_timestamp_sec
+    assert result["iat"] <= current_timestamp_sec
     for key in DECODED_MOCK_JWT.keys():
         assert result[key] == DECODED_MOCK_JWT[key]
 
 
 def test_validate_and_decode_token_exp_error():
     # Arrange
-    current_timestamp = get_current_timestamp_in_seconds()
+    current_timestamp_sec = current_timestamp()
     encoded_token = get_encoded_mock_jwt(
         {
             **DECODED_MOCK_JWT,
-            "exp": current_timestamp - 1,
-            "iat": current_timestamp - 301,
+            "exp": current_timestamp_sec - 1,
+            "iat": current_timestamp_sec - 301,
         }
     )
 
@@ -95,8 +95,8 @@ async def test_jwt_bearer_ok():
         )
         for key in DECODED_MOCK_JWT.keys():
             assert decoded_jwt[key] == DECODED_MOCK_JWT[key]
-        assert decoded_jwt["exp"] > get_current_timestamp_in_seconds()
-        assert decoded_jwt["iat"] <= get_current_timestamp_in_seconds()
+        assert decoded_jwt["exp"] > current_timestamp()
+        assert decoded_jwt["iat"] <= current_timestamp()
 
 
 @pytest.mark.asyncio
@@ -120,8 +120,8 @@ async def test_jwt_bearer_admin_ok():
         )
         for key in DECODED_ADMIN_MOCK_JWT.keys():
             assert decoded_jwt[key] == DECODED_ADMIN_MOCK_JWT[key]
-        assert decoded_jwt["exp"] > get_current_timestamp_in_seconds()
-        assert decoded_jwt["iat"] <= get_current_timestamp_in_seconds()
+        assert decoded_jwt["exp"] > current_timestamp()
+        assert decoded_jwt["iat"] <= current_timestamp()
 
 
 @pytest.mark.asyncio

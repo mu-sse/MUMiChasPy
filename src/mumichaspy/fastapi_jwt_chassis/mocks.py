@@ -1,8 +1,9 @@
 import jwt
 from mumichaspy.fastapi_jwt_chassis.config import config
 from mumichaspy.fastapi_jwt_chassis.time import (
-    get_current_timestamp_in_seconds,
-    get_future_timestamp_in_seconds,
+    current_timestamp,
+    current_timestamp_with_timedelta,
+    DEFAULT_TIMEDELTA,
 )
 
 TESTING_PUBLIC_KEY = """
@@ -54,9 +55,9 @@ DECODED_ADMIN_MOCK_JWT = {
 def get_encoded_mock_jwt(jwt_payload):
     """Get an encoded JWT."""
     if "iat" not in jwt_payload:
-        jwt_payload["iat"] = get_current_timestamp_in_seconds()
+        jwt_payload["iat"] = current_timestamp()
     if "exp" not in jwt_payload:
-        jwt_payload["exp"] = get_future_timestamp_in_seconds()
+        jwt_payload["exp"] = current_timestamp_with_timedelta(seconds=DEFAULT_TIMEDELTA)
     return jwt.encode(jwt_payload, TESTING_PRIVATE_KEY, algorithm="RS256")
 
 
