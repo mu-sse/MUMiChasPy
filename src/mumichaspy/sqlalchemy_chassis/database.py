@@ -20,7 +20,8 @@ async def get_db():
     try:
         yield db
         await db.commit()
-    except:  # noqa: E722
+    except Exception as exc:  # noqa: E722
         await db.rollback()
+        raise exc
     finally:
         await db.close()
