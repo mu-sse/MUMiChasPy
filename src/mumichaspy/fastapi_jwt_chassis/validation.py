@@ -28,7 +28,7 @@ def validate_and_decode_token(
     except Exception as exc:
         raise_and_log_error(
             logger,
-            status.HTTP_403_FORBIDDEN,
+            status.HTTP_401_UNAUTHORIZED,
             "Could not decode JWT",
             f"Could not decode JWT: {exc}",
         )
@@ -48,7 +48,7 @@ class JWTBearer(HTTPBearer):  # pylint: disable=too-few-public-methods
         # Check credential scheme
         if not credentials.scheme == "Bearer":
             raise_and_log_error(
-                logger, status.HTTP_403_FORBIDDEN, "Invalid authentication scheme"
+                logger, status.HTTP_401_UNAUTHORIZED, "Invalid authentication scheme"
             )
 
         # Check if token is valid
@@ -62,7 +62,7 @@ class JWTBearer(HTTPBearer):  # pylint: disable=too-few-public-methods
         # Check issuer
         if decoded_jwt["iss"] != config.jwt_issuer:
             raise_and_log_error(
-                logger, status.HTTP_403_FORBIDDEN, "Invalid JWT issuer."
+                logger, status.HTTP_401_UNAUTHORIZED, "Invalid JWT issuer."
             )
 
         # Return decoded JWT

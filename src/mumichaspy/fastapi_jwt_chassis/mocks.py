@@ -95,3 +95,13 @@ def mock_jwt_headers_admin(headers: dict = {}):
         **headers,
         "Authorization": f"Bearer {get_encoded_mock_jwt(DECODED_ADMIN_MOCK_JWT)}",
     }
+
+
+def assert_token_validation_called(mock_validate_and_decode_token, encoded_token):
+    """Assert mock validate and decode token was called."""
+    mock_validate_and_decode_token.assert_called_once_with(
+        encoded_token=encoded_token,
+        public_key=config.public_key,
+        issuer=config.jwt_issuer,
+        algorithms=[config.jwt_algorithm],
+    )

@@ -1,22 +1,24 @@
-from fastapi import HTTPException, status
-import pytest
-from unittest.mock import MagicMock, patch
-from mumichaspy.fastapi_jwt_chassis.config import config
 import logging
+from unittest import mock
+from unittest.mock import MagicMock
+
+import pytest
+from fastapi import HTTPException, status
+
+from mumichaspy.fastapi_jwt_chassis.config import config
+from mumichaspy.fastapi_jwt_chassis.mocks import (
+    TESTING_PUBLIC_KEY,
+    DECODED_MOCK_JWT,
+    DECODED_ADMIN_MOCK_JWT,
+    assert_token_validation_called,
+    get_encoded_mock_jwt,
+)
+from mumichaspy.fastapi_jwt_chassis.time import current_timestamp
 from mumichaspy.fastapi_jwt_chassis.validation import (
     validate_and_decode_token,
     JWTBearer,
     JWTBearerAdmin,
 )
-from mumichaspy.fastapi_jwt_chassis.mocks import (
-    TESTING_PUBLIC_KEY,
-    DECODED_MOCK_JWT,
-    DECODED_ADMIN_MOCK_JWT,
-    get_encoded_mock_jwt,
-)
-
-from mumichaspy.fastapi_jwt_chassis.time import current_timestamp
-
 
 logger = logging.getLogger(__name__)
 config.public_key = TESTING_PUBLIC_KEY
@@ -62,7 +64,7 @@ def test_validate_and_decode_token_exp_error():
             [config.jwt_algorithm],
         )
 
-    assert exc.value.status_code == status.HTTP_403_FORBIDDEN
+    assert exc.value.status_code == status.HTTP_401_UNAUTHORIZED
     assert exc.value.detail == "Could not decode JWT"
 
 
@@ -71,83 +73,66 @@ def test_validate_and_decode_token_exp_error():
 
 
 @pytest.mark.asyncio
-async def test_jwt_bearer_ok():
+@mock.patch("mumichaspy.fastapi_jwt_chassis.validation.validate_and_decode_token")
+async def test_jwt_bearer_ok(mock_validate_and_decode_token):
     """Test JWTBearer with a valid token."""
     # Arrange
-    with patch(
-        "mumichaspy.fastapi_jwt_chassis.validation.validate_and_decode_token",
-        return_value=DECODED_MOCK_JWT,
-    ) as mock_validate:
-        jwt_bearer = JWTBearer()
-        request = MagicMock()
-        encoded_token = get_encoded_mock_jwt(DECODED_MOCK_JWT)
-        request.headers = {"Authorization": f"Bearer {encoded_token}"}
+    mock_validate_and_decode_token.return_value = DECODED_MOCK_JWT
 
-        # Act
-        decoded_jwt = await jwt_bearer(request)
+    jwt_bearer = JWTBearer()
+    request = MagicMock()
+    encoded_token = get_encoded_mock_jwt(DECODED_MOCK_JWT)
+    request.headers = {"Authorization": f"Bearer {encoded_token}"}
 
-        # Assert
-        mock_validate.assert_called_once_with(
-            encoded_token=encoded_token,
-            public_key=config.public_key,
-            issuer=config.jwt_issuer,
-            algorithms=[config.jwt_algorithm],
-        )
-        for key in DECODED_MOCK_JWT.keys():
-            assert decoded_jwt[key] == DECODED_MOCK_JWT[key]
-        assert decoded_jwt["exp"] > current_timestamp()
-        assert decoded_jwt["iat"] <= current_timestamp()
+    # Act
+    decoded_jwt = await jwt_bearer(request)
+
+    # Assert
+    assert_token_validation_called(
+        mock_validate_and_decode_token,
+        encoded_token,
+    )
+    for key in DECODED_MOCK_JWT.keys():
+        assert decoded_jwt[key] == DECODED_MOCK_JWT[key]
+    assert decoded_jwt["exp"] > current_timestamp()
+    assert decoded_jwt["iat"] <= current_timestamp()
 
 
 @pytest.mark.asyncio
-async def test_jwt_bearer_admin_ok():
+@mock.patch("mumichaspy.fastapi_jwt_chassis.validation.validate_and_decode_token")
+async def test_jwt_bearer_admin_ok(mock_validate_and_decode_token):
     """Test JWTBearerAdmin with a valid token."""
     # Arrange
-    with patch(
-        "mumichaspy.fastapi_jwt_chassis.validation.validate_and_decode_token",
-        return_value=DECODED_ADMIN_MOCK_JWT,
-    ) as mock_validate:
-        jwt_bearer_admin = JWTBearerAdmin()
-        request = MagicMock()
-        encoded_token = get_encoded_mock_jwt(DECODED_ADMIN_MOCK_JWT)
-        request.headers = {"Authorization": f"Bearer {encoded_token}"}
-        decoded_jwt = await jwt_bearer_admin(request)
-        mock_validate.assert_called_once_with(
-            encoded_token=encoded_token,
-            public_key=config.public_key,
-            issuer=config.jwt_issuer,
-            algorithms=[config.jwt_algorithm],
-        )
-        for key in DECODED_ADMIN_MOCK_JWT.keys():
-            assert decoded_jwt[key] == DECODED_ADMIN_MOCK_JWT[key]
-        assert decoded_jwt["exp"] > current_timestamp()
-        assert decoded_jwt["iat"] <= current_timestamp()
+    mock_validate_and_decode_token.return_value = DECODED_ADMIN_MOCK_JWT
+    jwt_bearer_admin = JWTBearerAdmin()
+    request = MagicMock()
+    encoded_token = get_encoded_mock_jwt(DECODED_ADMIN_MOCK_JWT)
+    request.headers = {"Authorization": f"Bearer {encoded_token}"}
+    decoded_jwt = await jwt_bearer_admin(request)
+    assert_token_validation_called(mock_validate_and_decode_token, encoded_token)
+    for key in DECODED_ADMIN_MOCK_JWT.keys():
+        assert decoded_jwt[key] == DECODED_ADMIN_MOCK_JWT[key]
+    assert decoded_jwt["exp"] > current_timestamp()
+    assert decoded_jwt["iat"] <= current_timestamp()
 
 
 @pytest.mark.asyncio
-async def test_jwt_bearer_admin_error_no_admin_role():
+@mock.patch("mumichaspy.fastapi_jwt_chassis.validation.validate_and_decode_token")
+async def test_jwt_bearer_admin_error_no_admin_role(mock_validate_and_decode_token):
     """Test JWTBearerAdmin with a valid token but no admin role."""
     # Arrange
-    with patch(
-        "mumichaspy.fastapi_jwt_chassis.validation.validate_and_decode_token",
-        return_value=DECODED_MOCK_JWT,
-    ) as mock_validate:
-        jwt_bearer_admin = JWTBearerAdmin()
-        request = MagicMock()
-        encoded_token = get_encoded_mock_jwt(DECODED_MOCK_JWT)
-        request.headers = {"Authorization": f"Bearer {encoded_token}"}
+    mock_validate_and_decode_token.return_value = DECODED_MOCK_JWT
+    jwt_bearer_admin = JWTBearerAdmin()
+    request = MagicMock()
+    encoded_token = get_encoded_mock_jwt(DECODED_MOCK_JWT)
+    request.headers = {"Authorization": f"Bearer {encoded_token}"}
 
-        # Act
-        with pytest.raises(HTTPException) as exc:
-            await jwt_bearer_admin(request)
-            print(exc)
+    # Act
+    with pytest.raises(HTTPException) as exc:
+        await jwt_bearer_admin(request)
+        print(exc)
 
-        # Assert
-        assert exc.value.detail == "Only admins can perform this action"
-        assert exc.value.status_code == status.HTTP_403_FORBIDDEN
-        mock_validate.assert_called_once_with(
-            encoded_token=encoded_token,
-            public_key=config.public_key,
-            issuer=config.jwt_issuer,
-            algorithms=[config.jwt_algorithm],
-        )
+    # Assert
+    assert exc.value.detail == "Only admins can perform this action"
+    assert exc.value.status_code == status.HTTP_403_FORBIDDEN
+    assert_token_validation_called(mock_validate_and_decode_token, encoded_token)
