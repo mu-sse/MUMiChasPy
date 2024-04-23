@@ -199,3 +199,6 @@ async def test_create_element_ok():
         assert db_element.id is not None
         assert db_element.name == element_dict["name"]
         assert db_element.description == element_dict["description"]
+
+
+# @ToDo: Test with filters
